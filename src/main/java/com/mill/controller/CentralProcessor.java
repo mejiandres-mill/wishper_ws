@@ -40,7 +40,7 @@ public class CentralProcessor {
 			case 1:
 				return accessManager.process(message, username);
 			case 2:
-				return null;// peopleManager.process(message, username);
+				return peopleManager.process(message, username);
 			case 3:
 				return null; //productManager.process(message, username);
 			case 4:

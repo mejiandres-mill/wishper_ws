@@ -8,7 +8,10 @@ package com.mill.session;
 import com.mill.model.Friends;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -31,4 +34,28 @@ public class FriendsFacade extends AbstractFacade<Friends> {
         super(Friends.class);
     }
     
+    public Friends findRelationShip(int friender, int friendee)
+    {
+        Friends result = null;
+        TypedQuery<Friends> query = em.createNamedQuery("Friends.findRelationship", Friends.class);
+        query.setParameter("friender", friender);
+        query.setParameter("friendee", friendee);
+        try
+        {
+            result = query.getSingleResult();
+            return result;
+        }catch(NoResultException nre)
+        {
+            return null;
+        }
+    }
+    
+    public int deleteRelationShip(int friender, int friendee)
+    {
+        Query query = em.createNamedQuery("Friends.deleteRelationship");
+        query.setParameter("friender", friender);
+        query.setParameter("friendee", friendee);
+        
+        return query.executeUpdate();
+    }
 }
