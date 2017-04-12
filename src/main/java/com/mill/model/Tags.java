@@ -5,6 +5,7 @@
  */
 package com.mill.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -47,8 +48,10 @@ public class Tags implements Serializable {
     @NotNull
     @Size(min = 1, max = 200)
     private String name;
+    @JsonIgnore
     @ManyToMany(mappedBy = "tagsList")
     private List<Stores> storesList;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tagsIdtags")
     private List<ProductTags> productTagsList;
 

@@ -5,6 +5,7 @@
  */
 package com.mill.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -60,10 +61,12 @@ public class Stores implements Serializable {
         @JoinColumn(name = "tags_idtags", referencedColumnName = "idtags")
     })
     @ManyToMany
+    @JsonIgnore
     private List<Tags> tagsList;
     @JoinColumn(name = "countries_idcountries", referencedColumnName = "idcountries")
     @ManyToOne
     private Countries countriesIdcountries;
+    @JsonIgnore
     @OneToMany(mappedBy = "storesIdstores")
     private List<Products> productsList;
 

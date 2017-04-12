@@ -5,12 +5,15 @@
  */
 package com.mill.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -23,6 +26,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -41,7 +45,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Products.findByName", query = "SELECT p FROM Products p WHERE p.name = :name"),
     @NamedQuery(name = "Products.findByDescription", query = "SELECT p FROM Products p WHERE p.description = :description"),
     @NamedQuery(name = "Products.findByPrice", query = "SELECT p FROM Products p WHERE p.price = :price"),
-    @NamedQuery(name = "Products.findByShow", query = "SELECT p FROM Products p WHERE p.show = :show"),
+    @NamedQuery(name = "Products.findByShowing", query = "SELECT p FROM Products p WHERE p.showing = :showing"),
     @NamedQuery(name = "Products.findByPublishdate", query = "SELECT p FROM Products p WHERE p.publishdate = :publishdate")
 })
 public class Products implements Serializable {
@@ -57,30 +61,39 @@ public class Products implements Serializable {
     private String description;
     @Size(max = 20)
     private String price;
-    private Integer show;
+    private Integer showing;
     @Temporal(TemporalType.DATE)
     private Date publishdate;
     @ManyToMany(mappedBy = "productsList")
+    @JsonIgnore
     private List<Messages> messagesList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "products")
+    @JsonIgnore
     private List<Tastes> tastesList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "products")
+    @JsonIgnore
     private List<Recomendations> recomendationsList;
     @JoinColumn(name = "stores_idstores", referencedColumnName = "idstores")
     @ManyToOne
     private Stores storesIdstores;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "productsIdproducts")
+    @JsonIgnore
+    @OneToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "productsIdproducts")
     private List<ProductImages> productImagesList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "productsIdproducts")
+    @JsonIgnore
+    @OneToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "productsIdproducts")
     private List<ProductTags> productTagsList;
+    @Transient
+    private List<Images> images;
 
     public Products()
     {
+        images = new ArrayList<>();
     }
 
     public Products(Integer idproducts)
     {
         this.idproducts = idproducts;
+        images = new ArrayList<>();
     }
 
     public Integer getIdproducts()
@@ -123,14 +136,14 @@ public class Products implements Serializable {
         this.price = price;
     }
 
-    public Integer getShow()
+    public Integer getShowing()
     {
-        return show;
+        return showing;
     }
 
-    public void setShow(Integer show)
+    public void setShowing(Integer showing)
     {
-        this.show = show;
+        this.showing = showing;
     }
 
     public Date getPublishdate()
@@ -206,6 +219,22 @@ public class Products implements Serializable {
     public void setProductTagsList(List<ProductTags> productTagsList)
     {
         this.productTagsList = productTagsList;
+    }
+    
+    public List<Images> getImages()
+    {
+        if(images == null)
+            images = new ArrayList<>();
+        for(ProductImages pi :productImagesList)
+        {
+            images.add(pi.getImagesIdimages());
+        }
+        return images;
+    }
+    
+    public void setImages(List<Images> images)
+    {
+        this.images = images;
     }
 
     @Override

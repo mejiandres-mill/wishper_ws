@@ -8,7 +8,9 @@ package com.mill.session;
 import com.mill.model.Tastes;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -29,6 +31,22 @@ public class TastesFacade extends AbstractFacade<Tastes> {
     public TastesFacade()
     {
         super(Tastes.class);
+    }
+    
+    public Tastes findByKeys(int idproducts, int idusers)
+    {
+        Tastes result = null;
+        TypedQuery<Tastes> query = em.createNamedQuery("Tastes.findByKeys", Tastes.class);
+        query.setParameter("idproducts", idproducts);
+        query.setParameter("idusers", idusers);
+        try
+        {
+            result = query.getSingleResult();
+            return result;
+        }catch(NoResultException nre)
+        {
+            return null;
+        }
     }
     
 }

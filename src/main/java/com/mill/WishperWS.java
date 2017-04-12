@@ -14,6 +14,7 @@ import com.mill.utils.Result;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.sql.SQLException;
+import javax.ejb.Stateless;
 import javax.naming.NamingException;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Consumes;
@@ -30,6 +31,7 @@ import javax.ws.rs.core.SecurityContext;
  *
  * @author mill2
  */
+@Stateless
 @ApplicationPath("/wishper")
 @Path("/ws")
 public class WishperWS extends Application {
@@ -49,10 +51,14 @@ public class WishperWS extends Application {
     @Produces("application/json")
     public Response process(Message message, @Context SecurityContext securityContext)
     {
+        long t0 = System.currentTimeMillis();
+        System.out.println("Validating user...");
         Principal principal = securityContext.getUserPrincipal();
         String username = principal.getName();
+        System.out.println("Access granted to " + username + "...");
         try
         {
+            System.out.println("Processing request...");
             return Response.status(200).entity(processor.process(message, username)).build();
         } catch (Exception e)
         {
@@ -88,6 +94,8 @@ public class WishperWS extends Application {
             }
             System.out.println("Finish processing...");
             return Response.status(500).entity(result).build();
+        }finally{
+            System.out.println("Request processed in " + (System.currentTimeMillis() - t0) + "ms...");
         }
     }
 }

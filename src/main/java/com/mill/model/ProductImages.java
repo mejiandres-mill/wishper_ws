@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 {
     @NamedQuery(name = "ProductImages.findAll", query = "SELECT p FROM ProductImages p"),
     @NamedQuery(name = "ProductImages.findByIdproductImages", query = "SELECT p FROM ProductImages p WHERE p.idproductImages = :idproductImages"),
-    @NamedQuery(name = "ProductImages.findByShow", query = "SELECT p FROM ProductImages p WHERE p.show = :show")
+    @NamedQuery(name = "ProductImages.findByShowing", query = "SELECT p FROM ProductImages p WHERE p.showing = :showing")
 })
 public class ProductImages implements Serializable {
 
@@ -40,7 +40,7 @@ public class ProductImages implements Serializable {
     @Basic(optional = false)
     @Column(name = "idproduct_images")
     private Integer idproductImages;
-    private Short show;
+    private Short showing;
     @JoinColumn(name = "images_idimages", referencedColumnName = "idimages")
     @ManyToOne(optional = false)
     private Images imagesIdimages;
@@ -67,14 +67,14 @@ public class ProductImages implements Serializable {
         this.idproductImages = idproductImages;
     }
 
-    public Short getShow()
+    public Short getShowing()
     {
-        return show;
+        return showing;
     }
 
-    public void setShow(Short show)
+    public void setShowing(Short showing)
     {
-        this.show = show;
+        this.showing = showing;
     }
 
     public Images getImagesIdimages()

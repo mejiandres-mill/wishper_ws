@@ -6,9 +6,12 @@
 package com.mill.session;
 
 import com.mill.model.Tags;
+import com.mill.model.Users;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -29,6 +32,21 @@ public class TagsFacade extends AbstractFacade<Tags> {
     public TagsFacade()
     {
         super(Tags.class);
+    }
+    
+    public Tags findByName(String name)
+    {
+        Tags result = null;
+        TypedQuery<Tags> query = em.createNamedQuery("Tags.findByName", Tags.class);
+        query.setParameter("name", name);
+        try
+        {
+            result = query.getSingleResult();
+            return result;
+        }catch(NoResultException nre)
+        {
+            return null;
+        } 
     }
     
 }

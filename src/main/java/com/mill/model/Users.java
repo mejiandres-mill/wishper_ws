@@ -7,7 +7,6 @@ package com.mill.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -78,7 +77,7 @@ public class Users implements Serializable {
     @Size(max = 256)
     private String apikey;
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "users")
     private List<Tastes> tastesList;
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")

@@ -12,45 +12,47 @@ import com.mill.utils.Message;
 import com.mill.utils.Result;
 
 public class CentralProcessor {
-	
-	private AccessManager accessManager;
-	private PeopleManager peopleManager;
-	private ProductManager productManager;
-	private StoreManager storeManager;
-	private ChatManager chatManager;
-	private ObjectMapper mapper;
-        
-        
-	
-	public CentralProcessor() 
-	{
-		mapper = new ObjectMapper();
-		accessManager = new AccessManager(mapper);
-		peopleManager = new PeopleManager( mapper);		
-		storeManager = new StoreManager(mapper);
-		productManager = new ProductManager( mapper);
-		chatManager = new ChatManager(mapper);
-	}
-	
-	public Result process(Message message, String username) throws WSException, SQLException, NoSuchAlgorithmException, NamingException
-	{
-		int operation = message.getOperation() / 100;
-		switch(operation)
-		{
-			case 1:
-				return accessManager.process(message, username);
-			case 2:
-				return peopleManager.process(message, username);
-			case 3:
-				return null; //productManager.process(message, username);
-			case 4:
-				return null; // storeManager.process(message, username);
-			case 5:
-				return null; // chatManager.process(message, username);
-			default:
-				throw new WSException(Constants.INVALID_OPERATION, "Operación no válida");
-		}
-	}
-	
+
+    private final AccessManager accessManager;
+    private final PeopleManager peopleManager;
+    private final ProductManager productManager;
+    private final StoreManager storeManager;
+    private final ChatManager chatManager;
+    private final ObjectMapper mapper;
+
+    public CentralProcessor()
+    {
+        mapper = new ObjectMapper();
+        accessManager = new AccessManager(mapper);
+        peopleManager = new PeopleManager(mapper);
+        storeManager = new StoreManager(mapper);
+        productManager = new ProductManager(mapper);
+        chatManager = new ChatManager(mapper);
+    }
+
+    public Result process(Message message, String username) throws WSException, SQLException, NoSuchAlgorithmException, NamingException
+    {
+        int operation = message.getOperation() / 100;
+        switch (operation)
+        {
+            case 1:
+                System.out.println("Calling access manager with operation: " + message.getOperation() + "...");
+                return accessManager.process(message, username);
+            case 2:
+                System.out.println("Calling people manager with operation: " + message.getOperation() + "...");
+                return peopleManager.process(message, username);
+            case 3:
+                System.out.println("Calling product manager with operation: " + message.getOperation() + "...");
+                return productManager.process(message, username);
+            case 4:
+                System.out.println("Calling store manager with operation: " + message.getOperation() + "...");
+                return null; // storeManager.process(message, username);
+            case 5:
+                System.out.println("Calling chat manager with operation: " + message.getOperation() + "...");
+                return null; // chatManager.process(message, username);
+            default:
+                throw new WSException(Constants.INVALID_OPERATION, "Operación no válida");
+        }
+    }
 
 }

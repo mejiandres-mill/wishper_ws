@@ -33,7 +33,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Recomendations.findByReceipient", query = "SELECT r FROM Recomendations r WHERE r.recomendationsPK.receipient = :receipient"),
     @NamedQuery(name = "Recomendations.findByProductsIdproducts", query = "SELECT r FROM Recomendations r WHERE r.recomendationsPK.productsIdproducts = :productsIdproducts"),
     @NamedQuery(name = "Recomendations.findByRecDate", query = "SELECT r FROM Recomendations r WHERE r.recDate = :recDate"),
-    @NamedQuery(name = "Recomendations.findByShowed", query = "SELECT r FROM Recomendations r WHERE r.showed = :showed")
+    @NamedQuery(name = "Recomendations.findByShowed", query = "SELECT r FROM Recomendations r WHERE r.showed = :showed"),
+    @NamedQuery(name = "Recomendations.findByKeys", query = "SELECT r FROM Recomendations r WHERE r.recomendationsPK.recomender = :recomender AND r.recomendationsPK.receipient = :receipient AND r.recomendationsPK.productsIdproducts = :idproducts")
 })
 public class Recomendations implements Serializable {
 

@@ -32,7 +32,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Tastes.findByUsersIdusers", query = "SELECT t FROM Tastes t WHERE t.tastesPK.usersIdusers = :usersIdusers"),
     @NamedQuery(name = "Tastes.findByProductsIdproducts", query = "SELECT t FROM Tastes t WHERE t.tastesPK.productsIdproducts = :productsIdproducts"),
     @NamedQuery(name = "Tastes.findByLiked", query = "SELECT t FROM Tastes t WHERE t.liked = :liked"),
-    @NamedQuery(name = "Tastes.findByInterDate", query = "SELECT t FROM Tastes t WHERE t.interDate = :interDate")
+    @NamedQuery(name = "Tastes.findByInterDate", query = "SELECT t FROM Tastes t WHERE t.interDate = :interDate"),
+    @NamedQuery(name = "Tastes.findByKeys", query= "SELECT t FROM Tastes t WHERE t.tastesPK.productsIdproducts = :idproducts AND t.tastesPK.usersIdusers = :idusers")
 })
 public class Tastes implements Serializable {
 

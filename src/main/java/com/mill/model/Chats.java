@@ -5,6 +5,7 @@
  */
 package com.mill.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -51,6 +52,7 @@ public class Chats implements Serializable {
     private String name;
     @Temporal(TemporalType.DATE)
     private Date creationdate;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "chats")
     private List<Chatusers> chatusersList;
     @JoinColumn(name = "users_idusers", referencedColumnName = "idusers")

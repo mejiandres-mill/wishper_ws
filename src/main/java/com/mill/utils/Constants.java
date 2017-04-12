@@ -14,6 +14,7 @@ public class Constants {
 	public static final int INVALID_OPERATION = 201;
 	public static final int EXISTING_USER = 300;
 	public static final int AUTHENTICATION_ERROR = 301;
+        public static final int DUPLICATE_ENTRY = 302;
 	public static final int NO_RESULTS_ERROR = 400;
 	public static final int CHAT_ERROR = 500;
 	

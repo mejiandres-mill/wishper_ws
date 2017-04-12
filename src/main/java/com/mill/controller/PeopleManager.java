@@ -1,7 +1,6 @@
 package com.mill.controller;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +26,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import org.hibernate.Hibernate;
 
 public class PeopleManager {
 
     private ObjectMapper mapper;
-    UsersFacade usersFacade = lookupUsersFacadeBean();
-    FriendsFacade friendsFacade = lookupFriendsFacadeBean();
+    private UsersFacade usersFacade = lookupUsersFacadeBean();
+    private FriendsFacade friendsFacade = lookupFriendsFacadeBean();
 
     public PeopleManager(ObjectMapper mapper)
     {
@@ -64,6 +62,7 @@ public class PeopleManager {
             throw new WSException(Constants.JSON_ERROR, "Error transformando JSON");
         } catch (JsonMappingException e)
         {
+            e.printStackTrace();
             throw new WSException(Constants.JSON_ERROR, "Error en mapeo JSON");
         } catch (IOException e)
         {
@@ -135,7 +134,6 @@ public class PeopleManager {
         return r;
     }
 
-    @SuppressWarnings("unchecked")
     private Result isFriend(String data, String username) throws JsonParseException, JsonMappingException, IOException, SQLException, NamingException
     {
         Result r = new Result();
