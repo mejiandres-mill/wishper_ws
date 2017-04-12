@@ -144,7 +144,7 @@ public class ProductManager {
             r.setData("Tag agregado");
         } else
         {
-            r.setState(STATE_OK);
+            r.setState(NO_RESULTS_ERROR);
             r.setData("Producto inexistente");
         }
         return r;

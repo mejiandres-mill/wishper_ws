@@ -46,10 +46,10 @@ public class CentralProcessor {
                 return productManager.process(message, username);
             case 4:
                 System.out.println("Calling store manager with operation: " + message.getOperation() + "...");
-                return null; // storeManager.process(message, username);
+                return storeManager.process(message, username);
             case 5:
                 System.out.println("Calling chat manager with operation: " + message.getOperation() + "...");
-                return null; // chatManager.process(message, username);
+                return chatManager.process(message, username);
             default:
                 throw new WSException(Constants.INVALID_OPERATION, "Operación no válida");
         }

@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mill.exceptions.WSException;
+import com.mill.model.Users;
 import com.mill.utils.Message;
 import com.mill.utils.Result;
 
@@ -27,44 +28,44 @@ public class ChatManager {
         this.mapper = mapper;
     }
 
-//    public Result process(Message message, String username) throws SQLException, WSException, NamingException
-//    {
-//        try
-//        {
-//            switch (message.getOperation())
-//            {
-//                case OPER_CREATE_CHAT:
-//                    return createChat(message.getData(), username);
-//                case OPER_ADD_PARTICIPANT:
-//                    return addParticipant(message.getData(), username);
-//                case OPER_SAVE_MESSAGE:
-//                    return saveMessage(message.getData(), username);
-//                case OPER_LOAD_CHAT:
-//                    return loadChat(message.getData(), username);
-//                case OPER_LOAD_CHATS:
-//                    return loadChats(message.getData(), username);
-//                case OPER_ADD_PRODUCT_MESSAGE:
-//                    return saveProductMessage(message.getData(), username);
-//                default:
-//                    throw new WSException(INVALID_OPERATION, "Operación no válida");
-//            }
-//
-//        } catch (JsonParseException e)
-//        {
-//            throw new WSException(JSON_ERROR, "Error transformando JSON");
-//        } catch (JsonMappingException e)
-//        {
-//            throw new WSException(JSON_ERROR, "Error en mapeo JSON");
-//        } catch (IOException e)
-//        {
-//            throw new WSException(JSON_ERROR, "Error de flujo de JSON");
-//        }
-//    }
-//
-//    private Result createChat(String data, String username)
-//            throws SQLException, JsonParseException, JsonMappingException, IOException, NamingException
-//    {
-//        Result r = new Result();
+    public Result process(Message message, String username) throws SQLException, WSException, NamingException
+    {
+        try
+        {
+            switch (message.getOperation())
+            {
+                case OPER_CREATE_CHAT:
+                    return createChat(message.getData(), username);
+                case OPER_ADD_PARTICIPANT:
+                    return addParticipant(message.getData(), username);
+                case OPER_SAVE_MESSAGE:
+                    return saveMessage(message.getData(), username);
+                case OPER_LOAD_CHAT:
+                    return loadChat(message.getData(), username);
+                case OPER_LOAD_CHATS:
+                    return loadChats(message.getData(), username);
+                case OPER_ADD_PRODUCT_MESSAGE:
+                    return saveProductMessage(message.getData(), username);
+                default:
+                    throw new WSException(INVALID_OPERATION, "Operación no válida");
+            }
+
+        } catch (JsonParseException e)
+        {
+            throw new WSException(JSON_ERROR, "Error transformando JSON");
+        } catch (JsonMappingException e)
+        {
+            throw new WSException(JSON_ERROR, "Error en mapeo JSON");
+        } catch (IOException e)
+        {
+            throw new WSException(JSON_ERROR, "Error de flujo de JSON");
+        }
+    }
+
+    private Result createChat(String data, String username)
+            throws SQLException, JsonParseException, JsonMappingException, IOException, NamingException
+    {
+        Result r = new Result();
 //        Connection conn = sqlUtil.getConnection();
 //        List<User> user = factory.getDaoRead().<User>getAllForInputExact(conn, TABLE_USERS, "email", username, factory);
 //        conn.close();
@@ -93,14 +94,14 @@ public class ChatManager {
 //            r.setState(DATABASE_ERROR);
 //            r.setData("Error creando chat");
 //        }
-//
-//        return r;
-//    }
-//
-//    private Result addParticipant(String data, String username)
-//            throws JsonParseException, JsonMappingException, IOException, SQLException, NamingException
-//    {
-//        Result r = new Result();
+
+        return r;
+    }
+
+    private Result addParticipant(String data, String username)
+            throws JsonParseException, JsonMappingException, IOException, SQLException, NamingException
+    {
+        Result r = new Result();
 //        ChatUsers cu = mapper.readValue(data, ChatUsers.class);
 //        Connection conn = sqlUtil.getConnection();
 //
@@ -119,13 +120,13 @@ public class ChatManager {
 //            r.setState(CHAT_ERROR);
 //            r.setData("Participante no agregado");
 //        }
-//
-//        return r;
-//    }
-//
-//    private Result saveMessage(String data, String username) throws SQLException, JsonParseException, JsonMappingException, IOException, NamingException
-//    {
-//        Result r = new Result();
+
+        return r;
+    }
+
+    private Result saveMessage(String data, String username) throws SQLException, JsonParseException, JsonMappingException, IOException, NamingException
+    {
+        Result r = new Result();
 //        Connection conn = sqlUtil.getConnection();
 //        List<User> user = factory.getDaoRead().<User>getAllForInputExact(conn, TABLE_USERS, "email", username, factory);
 //        conn.close();
@@ -145,14 +146,14 @@ public class ChatManager {
 //            r.setState(CHAT_ERROR);
 //            r.setData("Mensaje no agregado");
 //        }
-//
-//        return r;
-//    }
-//
-//    @SuppressWarnings("unchecked")
-//    private Result loadChat(String data, String username) throws SQLException, JsonParseException, JsonMappingException, IOException, NamingException
-//    {
-//        Result r = new Result();
+
+        return r;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Result loadChat(String data, String username) throws SQLException, JsonParseException, JsonMappingException, IOException, NamingException
+    {
+        Result r = new Result();
 //        Connection conn = sqlUtil.getConnection();
 //        List<User> user = factory.getDaoRead().<User>getAllForInputExact(conn, TABLE_USERS, "email", username, factory);
 //        conn.close();
@@ -190,13 +191,13 @@ public class ChatManager {
 //            r.setState(CHAT_ERROR);
 //            r.setData("Error cargando chat");
 //        }
-//
-//        return r;
-//    }
-//
-//    private Result loadChats(String data, String username) throws SQLException, WSException, JsonProcessingException, NamingException
-//    {
-//        Result r = new Result();
+
+        return r;
+    }
+
+    private Result loadChats(String data, String username) throws SQLException, WSException, JsonProcessingException, NamingException
+    {
+        Result r = new Result();
 //        Connection conn = sqlUtil.getConnection();
 //        List<User> user = factory.getDaoRead().<User>getAllForInputExact(conn, TABLE_USERS, "email", username, factory);
 //        conn.close();
@@ -219,13 +220,13 @@ public class ChatManager {
 //        {
 //            r.setData(mapper.writeValueAsString(chats));
 //        }
-//
-//        return r;
-//    }
-//
-//    private Result saveProductMessage(String data, String username) throws SQLException, JsonParseException, JsonMappingException, IOException, NamingException
-//    {
-//        Result r = new Result();
+
+        return r;
+    }
+
+    private Result saveProductMessage(String data, String username) throws SQLException, JsonParseException, JsonMappingException, IOException, NamingException
+    {
+        Result r = new Result();
 //        Connection conn = sqlUtil.getConnection();
 //        List<User> user = factory.getDaoRead().<User>getAllForInputExact(conn, TABLE_USERS, "email", username, factory);
 //        conn.close();
@@ -264,12 +265,12 @@ public class ChatManager {
 //            r.setState(CHAT_ERROR);
 //            r.setData("No perteneces a este chat o la conversación no existe");
 //        }
-//
-//        return r;
-//    }
-//
-//    private boolean checkUserOnChat(long chatId, User user) throws SQLException, NamingException
-//    {
+
+        return r;
+    }
+
+    private boolean checkUserOnChat(long chatId, Users user) throws SQLException, NamingException
+    {
 //        Connection conn = sqlUtil.getConnection();
 //        long[] keyValues = new long[1];
 //        keyValues[0] = chatId;
@@ -288,6 +289,7 @@ public class ChatManager {
 //        keyValues[1] = chatId;
 //        conn = sqlUtil.getConnection();
 //        return factory.getDaoRead().exists(conn, TABLE_CHATUSERS, keyValues, factory);
-//    }
+        return true;
+    }
 
 }
