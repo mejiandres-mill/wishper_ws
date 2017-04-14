@@ -15,13 +15,30 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mill.exceptions.WSException;
+import com.mill.model.Chats;
+import com.mill.model.Chatusers;
+import com.mill.model.Messages;
 import com.mill.model.Users;
+import com.mill.session.ChatsFacade;
+import com.mill.session.ChatusersFacade;
+import com.mill.session.MessagesFacade;
+import com.mill.session.UsersFacade;
 import com.mill.utils.Message;
 import com.mill.utils.Result;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.naming.Context;
+import javax.naming.InitialContext;
 
 public class ChatManager {
 
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
+    private final UsersFacade usersFacade = lookupUsersFacadeBean();
+    private final ChatsFacade chatsFacade = lookupChatsFacadeBean();
+    private final ChatusersFacade chatusersFacade = lookupChatusersFacadeBean();
+    private final MessagesFacade messagesFacade = lookupMessagesFacadeBean();
 
     public ChatManager(ObjectMapper mapper)
     {
@@ -55,6 +72,7 @@ public class ChatManager {
             throw new WSException(JSON_ERROR, "Error transformando JSON");
         } catch (JsonMappingException e)
         {
+            e.printStackTrace();
             throw new WSException(JSON_ERROR, "Error en mapeo JSON");
         } catch (IOException e)
         {
@@ -66,34 +84,20 @@ public class ChatManager {
             throws SQLException, JsonParseException, JsonMappingException, IOException, NamingException
     {
         Result r = new Result();
-//        Connection conn = sqlUtil.getConnection();
-//        List<User> user = factory.getDaoRead().<User>getAllForInputExact(conn, TABLE_USERS, "email", username, factory);
-//        conn.close();
-//
-//        Chat chat = mapper.readValue(data, Chat.class);
-//        String name = chat.getName();
-//        chat.setUser(user.get(0).getIdusers());
-//        chat.setName(name + System.currentTimeMillis());
-//
-//        conn = sqlUtil.getConnection();
-//        boolean success = factory.getDaoInsert().<Chat>putInto(conn, TABLE_CHATS, chat, factory, false);
-//
-//        if (success)
-//        {
-//            conn = sqlUtil.getConnection();
-//            List<Chat> chats = factory.getDaoRead().<Chat>getAllForInputExact(conn, TABLE_CHATS, "name",
-//                    chat.getName(), factory);
-//            conn.close();
-//            chats.get(0).setName(name);
-//            conn = sqlUtil.getConnection();
-//            success = factory.getDaoUpdate().<Chat>merge(conn, TABLE_CHATS, chats.get(0));
-//            r.setState(success ? STATE_OK : DATABASE_ERROR);
-//            r.setData(success ? mapper.writeValueAsString(chats.get(0)) : "Error creando chat");
-//        } else
-//        {
-//            r.setState(DATABASE_ERROR);
-//            r.setData("Error creando chat");
-//        }
+        Map<String, Object> map = mapper.readValue(data, Map.class);
+        String name = (String) map.get("name");
+        System.out.println("Fetching user...");
+        Users user = usersFacade.getUserByEmail(username);
+
+        Chats chat = new Chats();
+        chat.setCreationdate(new Date(System.currentTimeMillis()));
+        chat.setName(name);
+        chat.setUsersIdusers(user);
+
+        System.out.println("Creating chat...");
+        chatsFacade.create(chat);
+        r.setState(STATE_OK);
+        r.setData(mapper.writeValueAsString(chat));
 
         return r;
     }
@@ -102,24 +106,38 @@ public class ChatManager {
             throws JsonParseException, JsonMappingException, IOException, SQLException, NamingException
     {
         Result r = new Result();
-//        ChatUsers cu = mapper.readValue(data, ChatUsers.class);
-//        Connection conn = sqlUtil.getConnection();
-//
-//        List<User> user = factory.getDaoRead().<User>getAllForInputExact(conn, TABLE_USERS, "email", username, factory);
-//        conn.close();
-//
-//        if (checkUserOnChat(cu.getChat(), user.get(0)))
-//        {
-//            conn = sqlUtil.getConnection();
-//            boolean success = factory.getDaoInsert().<ChatUsers>putInto(conn, TABLE_CHATUSERS, cu, factory, false);
-//
-//            r.setState(success ? STATE_OK : DATABASE_ERROR);
-//            r.setData(success ? "Participante agregado" : "Error agregando participante");
-//        } else
-//        {
-//            r.setState(CHAT_ERROR);
-//            r.setData("Participante no agregado");
-//        }
+        Map<String, Object> map = mapper.readValue(data, Map.class);
+        int iduser = (int) map.get("user");
+        int idchat = (int) map.get("chat");
+
+        System.out.println("Fetching participant...");
+        Users participant = usersFacade.find(iduser);
+        if (participant != null)
+        {
+            System.out.println("User found, looking up chat...");
+            Chats chat = chatsFacade.find(idchat);
+            if (chat != null)
+            {
+                System.out.println("Chat found, adding participant...");
+                Chatusers cu = new Chatusers(iduser, idchat);
+                cu.setJoined(new Date(System.currentTimeMillis()));
+                cu.setChats(chat);
+                cu.setUsers(participant);
+                chatusersFacade.create(cu);
+                r.setState(STATE_OK);
+                r.setData("Usuario agregado");
+            } else
+            {
+                System.out.println("Chat not found...");
+                r.setState(NO_RESULTS_ERROR);
+                r.setData("Chat no existe");
+            }
+        } else
+        {
+            System.out.println("User not found...");
+            r.setState(NO_RESULTS_ERROR);
+            r.setData("El usuario no existe");
+        }
 
         return r;
     }
@@ -127,70 +145,90 @@ public class ChatManager {
     private Result saveMessage(String data, String username) throws SQLException, JsonParseException, JsonMappingException, IOException, NamingException
     {
         Result r = new Result();
-//        Connection conn = sqlUtil.getConnection();
-//        List<User> user = factory.getDaoRead().<User>getAllForInputExact(conn, TABLE_USERS, "email", username, factory);
-//        conn.close();
-//
-//        com.mill.models.Message message = mapper.readValue(data, com.mill.models.Message.class);
-//
-//        if (checkUserOnChat(message.getChat(), user.get(0)))
-//        {
-//            message.setSender(user.get(0).getIdusers());
-//            conn = sqlUtil.getConnection();
-//            boolean success = factory.getDaoInsert().<com.mill.models.Message>putInto(conn, TABLE_MESSAGES, message, factory, false);
-//
-//            r.setState(success ? STATE_OK : DATABASE_ERROR);
-//            r.setData(success ? "Mensaje agregado" : "Error agregando mensaje");
-//        } else
-//        {
-//            r.setState(CHAT_ERROR);
-//            r.setData("Mensaje no agregado");
-//        }
+        Map<String, Object> map = mapper.readValue(data, Map.class);
+        int idchat = (int) map.get("chat");
+        String message = (String) map.get("message");
+        System.out.println("Fetching user...");
+        Users user = usersFacade.getUserByEmail(username);
+        if (user != null)
+        {
+            System.out.println("User found, fetching chat...");
+            Chats c = chatsFacade.find(idchat);
+            if (c != null)
+            {
+                System.out.println("Chat found, adding message...");
+                Messages m = new Messages();
+                m.setMessage(message);
+                m.setTime(new Date(System.currentTimeMillis()));
+                m.setChatsIdchats(c);
+                m.setUsersIdusers(user);
+
+                messagesFacade.create(m);
+                r.setState(STATE_OK);
+                r.setData("Mensaje agregado");
+            } else
+            {
+                System.out.println("Chat not found ...");
+                r.setState(NO_RESULTS_ERROR);
+                r.setData("Chat no ha sido creado");
+            }
+        } else
+        {
+            System.out.println("User not found :( ...");
+            r.setState(NO_RESULTS_ERROR);
+            r.setData("Usuario no existente");
+        }
 
         return r;
     }
 
-    @SuppressWarnings("unchecked")
     private Result loadChat(String data, String username) throws SQLException, JsonParseException, JsonMappingException, IOException, NamingException
     {
         Result r = new Result();
-//        Connection conn = sqlUtil.getConnection();
-//        List<User> user = factory.getDaoRead().<User>getAllForInputExact(conn, TABLE_USERS, "email", username, factory);
-//        conn.close();
-//
-//        Map<String, Object> map = mapper.readValue(data, Map.class);
-//        int chatId = (int) map.get("chat");
-//
-//        if (checkUserOnChat(chatId, user.get(0)))
-//        {
-//            conn = sqlUtil.getConnection();
-//            long[] keyValues = new long[1];
-//            keyValues[0] = (int) map.get("chat");
-//            Chat chat = factory.getDaoRead().<Chat>get(conn, TABLE_CHATS, keyValues, factory);
-//            conn.close();
-//            conn = sqlUtil.getConnection();
-//            List<com.mill.models.Message> messages = factory.getDaoRead().<com.mill.models.Message>getAllForInputExact(conn, TABLE_MESSAGES, "chats_idchats", chat.getIdchats() + "", factory);
-//            conn.close();
-//            conn = sqlUtil.getConnection();
-//            List<ChatUsers> cu = factory.getDaoRead().<ChatUsers>getAllForInputExact(conn, TABLE_CHATUSERS, "chats_idchats", chat.getIdchats() + "", factory);
-//            conn.close();
-//            chat.setMessages(messages);
-//            for (ChatUsers c : cu)
-//            {
-//                conn = sqlUtil.getConnection();
-//                keyValues[0] = c.getUser();
-//                User u = factory.getDaoRead().<User>get(conn, TABLE_USERS, keyValues, factory);
-//                conn.close();
-//                chat.addParticipant(u);
-//            }
-//
-//            r.setState(STATE_OK);
-//            r.setData(mapper.writeValueAsString(chat));
-//        } else
-//        {
-//            r.setState(CHAT_ERROR);
-//            r.setData("Error cargando chat");
-//        }
+        Map<String, Object> map = mapper.readValue(data, Map.class);
+        int idchat = (int) map.get("chat");
+        System.out.println("Fetching chat...");
+        Chats chat = chatsFacade.find(idchat);
+        if (chat != null)
+        {
+            System.out.println("Chat found, checking user in chat");
+            Users user = chat.getUsersIdusers();
+            if (user.getEmail().equalsIgnoreCase(username))
+            {
+                r.setData(mapper.writeValueAsString(chat));
+                r.setState(STATE_OK);
+                System.out.println("User validated...");
+            } else
+            {
+                List<Users> participants = chat.getParticipants();
+                if (participants != null || !participants.isEmpty())
+                {
+                    for (Users u : participants)
+                    {
+                        if (u.getEmail().equalsIgnoreCase(username))
+                        {
+                            r.setData(mapper.writeValueAsString(chat));
+                            r.setState(STATE_OK);
+                            System.out.println("User validated...");
+                            break;
+                        }
+                        System.out.println("User not found in chat...");
+                        r.setState(CHAT_ERROR);
+                        r.setData("No perteneces a este chat");
+                    }
+                } else
+                {
+                    System.out.println("User not found in chat...");
+                    r.setState(NO_RESULTS_ERROR);
+                    r.setData("No perteneces a este chat");
+                }
+            }
+        } else
+        {
+            System.out.println("Chat not found...");
+            r.setState(NO_RESULTS_ERROR);
+            r.setData("Chat no existe");
+        }
 
         return r;
     }
@@ -198,28 +236,30 @@ public class ChatManager {
     private Result loadChats(String data, String username) throws SQLException, WSException, JsonProcessingException, NamingException
     {
         Result r = new Result();
-//        Connection conn = sqlUtil.getConnection();
-//        List<User> user = factory.getDaoRead().<User>getAllForInputExact(conn, TABLE_USERS, "email", username, factory);
-//        conn.close();
-//
-//        String query = " SELECT c.idchats AS idchats, c.name AS name, c.creationdate AS creationdate "
-//                + " FROM chats c INNER JOIN chatusers cu ON c.idchats = cu.chats_idchats "
-//                + " WHERE cu.users_idusers = ?";
-//        Object[] params = new Object[1];
-//        params[0] = user.get(0).getIdusers();
-//        List<Chat> chats = sqlUtil.executeDBOperation(query, TABLE_CHATS, params, factory);
-//
-//        conn = sqlUtil.getConnection();
-//        chats.addAll(factory.getDaoRead().<Chat>getAllForInputExact(conn, TABLE_CHATS, "users_idusers", user.get(0).getIdusers() + "", factory));
-//        conn.close();
-//        r.setState(STATE_OK);
-//        if (chats.isEmpty())
-//        {
-//            r.setData("No has iniciado ningún chat");
-//        } else
-//        {
-//            r.setData(mapper.writeValueAsString(chats));
-//        }
+        System.out.println("Fetching user...");
+        Users user = usersFacade.getUserByEmail(username);
+        List<Chats> chats = new ArrayList<>();
+
+        System.out.println("Checking user owned chats...");
+        chats.addAll(user.getChatsList());
+        System.out.println("Checking chats where user participate...");
+        List<Chatusers> list = user.getChatusersList();
+        for (Chatusers cu : list)
+        {
+            chats.add(cu.getChats());
+        }
+
+        if (chats.isEmpty())
+        {
+            System.out.println("No chats found...");
+            r.setState(STATE_OK);
+            r.setData("No tienes chats");
+        } else
+        {
+            System.out.println("Chats found...");
+            r.setState(STATE_OK);
+            r.setData(mapper.writeValueAsString(chats));
+        }
 
         return r;
     }
@@ -227,69 +267,109 @@ public class ChatManager {
     private Result saveProductMessage(String data, String username) throws SQLException, JsonParseException, JsonMappingException, IOException, NamingException
     {
         Result r = new Result();
-//        Connection conn = sqlUtil.getConnection();
-//        List<User> user = factory.getDaoRead().<User>getAllForInputExact(conn, TABLE_USERS, "email", username, factory);
-//        conn.close();
-//
-//        com.mill.models.Message message = mapper.readValue(data, com.mill.models.Message.class);
-//        message.setSender(user.get(0).getIdusers());
-//
-//        if (checkUserOnChat(message.getChat(), user.get(0)))
-//        {
-//            conn = sqlUtil.getConnection();
-//            long messageId = factory.getDaoInsert().<com.mill.models.Message>putInto(conn, TABLE_MESSAGES, message, factory);
-//            if (messageId < 0)
-//            {
-//                r.setState(CHAT_ERROR);
-//                r.setData("Error guardando mensaje");
-//            } else
-//            {
-//                for (Product p : message.getProducts())
-//                {
-//                    conn = sqlUtil.getConnection();
-//                    MessageProducts mp = new MessageProducts();
-//                    mp.setMessage(messageId);
-//                    mp.setProduct(p.getIdproducts());
-//                    if (!factory.getDaoInsert().<MessageProducts>putInto(conn, TABLE_MESSAGE_PRODUCTS, mp, factory, false))
-//                    {
-//                        r.setState(CHAT_ERROR);
-//                        r.setData("Error agregando producto al mensaje");
-//                        return r;
-//                    }
-//                }
-//                r.setState(STATE_OK);
-//                r.setData("Mensaje guardado");
-//            }
-//        } else
-//        {
-//            r.setState(CHAT_ERROR);
-//            r.setData("No perteneces a este chat o la conversación no existe");
-//        }
+        System.out.println("Fetching user...");
+        Users user = usersFacade.getUserByEmail(username);
+        Map<String, Object> map = mapper.readValue(data, Map.class);
+        System.out.println("Fetching chat...");
+        Chats chat = chatsFacade.find((int) map.get("chatsIdchats"));
+        if (chat != null)
+        {
+            Messages message = mapper.readValue(data, Messages.class);
+            message.setUsersIdusers(user);
+            message.setTime(new Date(System.currentTimeMillis()));
+            message.setChatsIdchats(chat);
+            System.out.println("Persisting message...");
+            messagesFacade.create(message);
+            r.setState(STATE_OK);
+            r.setData("Mensaje guardado");
+        } else
+        {
+
+            System.out.println("Chat not found...");
+            r.setState(CHAT_ERROR);
+            r.setData("Chat no existe");
+        }
 
         return r;
     }
 
-    private boolean checkUserOnChat(long chatId, Users user) throws SQLException, NamingException
+    private boolean checkUserOnChat(Chats chat, String username) throws SQLException, NamingException
     {
-//        Connection conn = sqlUtil.getConnection();
-//        long[] keyValues = new long[1];
-//        keyValues[0] = chatId;
-//        Chat c = factory.getDaoRead().<Chat>get(conn, TABLE_CHATS, keyValues, factory);
-//        conn.close();
-//        if (c == null)
-//        {
-//            return false;
-//        }
-//        if (c.getUser() == user.getIdusers())
-//        {
-//            return true;
-//        }
-//        keyValues = new long[2];
-//        keyValues[0] = user.getIdusers();
-//        keyValues[1] = chatId;
-//        conn = sqlUtil.getConnection();
-//        return factory.getDaoRead().exists(conn, TABLE_CHATUSERS, keyValues, factory);
-        return true;
+        Users user = chat.getUsersIdusers();
+        if (user.getEmail().equalsIgnoreCase(username))
+        {
+            return true;
+        } else
+        {
+            List<Users> participants = chat.getParticipants();
+            if (participants != null || !participants.isEmpty())
+            {
+                for (Users u : participants)
+                {
+                    if (u.getEmail().equalsIgnoreCase(username))
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            } else
+            {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private UsersFacade lookupUsersFacadeBean()
+    {
+        try
+        {
+            Context c = new InitialContext();
+            return (UsersFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/UsersFacade!com.mill.session.UsersFacade");
+        } catch (NamingException ne)
+        {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
+    }
+
+    private ChatsFacade lookupChatsFacadeBean()
+    {
+        try
+        {
+            Context c = new InitialContext();
+            return (ChatsFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/ChatsFacade!com.mill.session.ChatsFacade");
+        } catch (NamingException ne)
+        {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
+    }
+
+    private ChatusersFacade lookupChatusersFacadeBean()
+    {
+        try
+        {
+            Context c = new InitialContext();
+            return (ChatusersFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/ChatusersFacade!com.mill.session.ChatusersFacade");
+        } catch (NamingException ne)
+        {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
+    }
+
+    private MessagesFacade lookupMessagesFacadeBean()
+    {
+        try
+        {
+            Context c = new InitialContext();
+            return (MessagesFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/MessagesFacade!com.mill.session.MessagesFacade");
+        } catch (NamingException ne)
+        {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
     }
 
 }

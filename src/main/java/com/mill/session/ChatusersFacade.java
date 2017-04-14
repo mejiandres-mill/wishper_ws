@@ -6,9 +6,12 @@
 package com.mill.session;
 
 import com.mill.model.Chatusers;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -29,6 +32,21 @@ public class ChatusersFacade extends AbstractFacade<Chatusers> {
     public ChatusersFacade()
     {
         super(Chatusers.class);
+    }
+    
+    public List<Chatusers> findByChat(int idchat)
+    {
+        List<Chatusers> result = null;
+        TypedQuery<Chatusers> query = em.createNamedQuery("Chatusers.findByChatsIdchats", Chatusers.class);
+        query.setParameter("chatsIdchats", idchat);
+        try
+        {
+            result = query.getResultList();
+            return result;
+        }catch(NoResultException nre)
+        {
+            return null;
+        }
     }
     
 }

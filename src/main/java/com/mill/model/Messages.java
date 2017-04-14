@@ -5,6 +5,7 @@
  */
 package com.mill.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -60,9 +61,11 @@ public class Messages implements Serializable {
     })
     @ManyToMany
     private List<Products> productsList;
+    @JsonIgnore
     @JoinColumn(name = "chats_idchats", referencedColumnName = "idchats")
     @ManyToOne
     private Chats chatsIdchats;
+    @JsonIgnore
     @JoinColumn(name = "users_idusers", referencedColumnName = "idusers")
     @ManyToOne
     private Users usersIdusers;

@@ -7,6 +7,7 @@ package com.mill.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -23,6 +24,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -60,14 +62,18 @@ public class Chats implements Serializable {
     private Users usersIdusers;
     @OneToMany(mappedBy = "chatsIdchats")
     private List<Messages> messagesList;
+    @Transient
+    private List<Users> participants;
 
     public Chats()
     {
+        participants = new ArrayList<>();
     }
 
     public Chats(Integer idchats)
     {
         this.idchats = idchats;
+        participants = new ArrayList<>();
     }
 
     public Integer getIdchats()
@@ -130,6 +136,22 @@ public class Chats implements Serializable {
     public void setMessagesList(List<Messages> messagesList)
     {
         this.messagesList = messagesList;
+    }
+    
+    public List<Users> getParticipants()
+    {
+        if(participants == null)
+            participants = new ArrayList<>();
+        for(Chatusers cu : chatusersList)
+        {
+            participants.add(cu.getUsers());
+        }
+        return participants;
+    }
+    
+    public void setParticipants(List<Users> participants)
+    {
+        this.participants = participants;
     }
 
     @Override

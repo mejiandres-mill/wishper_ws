@@ -20,7 +20,6 @@ import com.mill.model.Recomendations;
 import com.mill.model.Stores;
 import com.mill.model.Tags;
 import com.mill.model.Tastes;
-import com.mill.model.TastesPK;
 import com.mill.model.Users;
 import com.mill.session.ImagesFacade;
 import com.mill.session.ProductsFacade;
