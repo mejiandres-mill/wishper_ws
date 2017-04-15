@@ -16,6 +16,7 @@ import com.mill.model.Images;
 import com.mill.model.ProductImages;
 import com.mill.model.ProductTags;
 import com.mill.model.Products;
+import com.mill.model.Purchases;
 import com.mill.model.Recomendations;
 import com.mill.model.Stores;
 import com.mill.model.Tags;
@@ -23,6 +24,7 @@ import com.mill.model.Tastes;
 import com.mill.model.Users;
 import com.mill.session.ImagesFacade;
 import com.mill.session.ProductsFacade;
+import com.mill.session.PurchasesFacade;
 import com.mill.session.RecomendationsFacade;
 import com.mill.session.StoresFacade;
 import com.mill.session.TagsFacade;
@@ -42,14 +44,15 @@ import javax.naming.InitialContext;
 
 public class ProductManager {
 
-    private ObjectMapper mapper;
-    private ProductsFacade productsFacade = lookupProductsFacadeBean();
-    private TagsFacade tagsFacade = lookupTagsFacadeBean();
-    private ImagesFacade imagesFacade = lookupImagesFacadeBean();
-    private UsersFacade usersFacade = lookupUsersFacadeBean();
-    private TastesFacade tastesFacade = lookupTastesFacadeBean();
-    private RecomendationsFacade recomendationsFacade = lookupRecomendationsFacadeBean();
-    private StoresFacade storesFacade = lookupStoresFacadeBean();
+    private final ObjectMapper mapper;
+    private final ProductsFacade productsFacade = lookupProductsFacadeBean();
+    private final TagsFacade tagsFacade = lookupTagsFacadeBean();
+    private final ImagesFacade imagesFacade = lookupImagesFacadeBean();
+    private final UsersFacade usersFacade = lookupUsersFacadeBean();
+    private final TastesFacade tastesFacade = lookupTastesFacadeBean();
+    private final RecomendationsFacade recomendationsFacade = lookupRecomendationsFacadeBean();
+    private final StoresFacade storesFacade = lookupStoresFacadeBean();
+    private final PurchasesFacade purchasesFacade = lookupPurchasesFacadeBean();
 
     public ProductManager(ObjectMapper mapper)
     {
@@ -88,6 +91,10 @@ public class ProductManager {
                     return addTag(message.getData(), username);
                 case OPER_ADD_PRODUCT_IMAGE:
                     return addImage(message.getData(), username);
+                case OPER_ADD_PURCHASE:
+                    return addPurchase(message.getData(), username);
+                case OPER_SHOW_PURCHASES:
+                    return showPurchases(message.getData(), username);
                 default:
                     throw new WSException(INVALID_OPERATION, "Operación no válida");
             }
@@ -271,10 +278,10 @@ public class ProductManager {
         int recomender = user.getIdusers();
         int receipient = (int) map.get("receipient");
         int idproducts = (int) map.get("product");
-        
+
         Recomendations rec = recomendationsFacade.findByKeys(recomender, receipient, idproducts);
-        
-        if(rec == null)
+
+        if (rec == null)
         {
             rec = new Recomendations(recomender, receipient, idproducts);
             rec.setShowed(Boolean.FALSE);
@@ -282,8 +289,7 @@ public class ProductManager {
             recomendationsFacade.create(rec);
             r.setState(STATE_OK);
             r.setData("Recomendación hecha");
-        }
-        else
+        } else
         {
             r.setState(DUPLICATE_ENTRY);
             r.setData("Recomendación ya se hizo");
@@ -293,31 +299,39 @@ public class ProductManager {
     }
 
     private Result showUserProds(String data, String username, boolean liked)
-            throws SQLException, JsonProcessingException, WSException, NamingException
+            throws SQLException, JsonProcessingException, WSException, NamingException, IOException
     {
         Result r = new Result();
+        Map<String, Object> map = mapper.readValue(data, Map.class);
         System.out.println("Fetching user...");
-        Users user = usersFacade.getUserByEmail(username);
+        Users user = null;
+        if(map.containsKey("user"))
+        {
+            user = usersFacade.find((int) map.get("user"));
+        }
+        else
+        {
+            user = usersFacade.getUserByEmail(username);
+        }
         System.out.println("Fetching taste list...");
         List<Tastes> tastes = user.getTastesList();
         List<Products> prods = new ArrayList<>();
-        
-        for(Tastes t : tastes)
+
+        for (Tastes t : tastes)
         {
-            if(t.getLiked() == liked)
+            if (t.getLiked() == liked)
             {
                 System.out.println("Adding product...");
                 prods.add(t.getProducts());
             }
         }
-        
-        if(prods.isEmpty())
+
+        if (prods.isEmpty())
         {
             System.out.println("No products found...");
             r.setState(NO_RESULTS_ERROR);
             r.setData("No se encontraron productos");
-        }
-        else
+        } else
         {
             System.out.println("There you go...");
             r.setState(STATE_OK);
@@ -327,28 +341,36 @@ public class ProductManager {
     }
 
     private Result showRecomendations(String data, String username)
-            throws SQLException, WSException, JsonProcessingException, NamingException
+            throws SQLException, WSException, JsonProcessingException, NamingException, IOException
     {
         Result r = new Result();
+        Map<String, Object> map = mapper.readValue(data, Map.class);
         System.out.println("Fetching user...");
-        Users user = usersFacade.getUserByEmail(username);
+        Users user = null;
+        if(map.containsKey("user"))
+        {
+            user = usersFacade.find((int) map.get("user"));
+        }
+        else
+        {
+            user = usersFacade.getUserByEmail(username);
+        }
         System.out.println("Fetching recomendations...");
         List<Recomendations> recs = user.getRecomendationsList();
         List<Products> prods = new ArrayList<>();
-        
-        for(Recomendations rec : recs)
+
+        for (Recomendations rec : recs)
         {
             System.out.println("Adding product...");
             prods.add(rec.getProducts());
         }
-        
-        if(prods.isEmpty())
+
+        if (prods.isEmpty())
         {
             System.out.println("No products found...");
             r.setState(NO_RESULTS_ERROR);
             r.setData("No se encontraron productos");
-        }
-        else
+        } else
         {
             System.out.println("There you go...");
             r.setState(STATE_OK);
@@ -364,15 +386,14 @@ public class ProductManager {
         Map<String, Object> map = mapper.readValue(data, Map.class);
         System.out.println("Fetching product...");
         Products p = productsFacade.find((int) map.get("idproducts"));
-        if(p != null)
+        if (p != null)
         {
             System.out.println("Product found...");
             p.setShowing(show ? 1 : 0);
             productsFacade.edit(p);
             r.setState(STATE_OK);
             r.setData("Producto " + (show ? "visible..." : "oculto..."));
-        }
-        else
+        } else
         {
             System.out.println("Product not found :(");
             r.setState(NO_RESULTS_ERROR);
@@ -389,12 +410,12 @@ public class ProductManager {
         Map<String, Object> map = mapper.readValue(data, Map.class);
         System.out.println("fetching product...");
         Products p = productsFacade.find((int) map.get("idproducts"));
-        if(p != null)
+        if (p != null)
         {
             String description = (String) map.get("description");
             String name = (String) map.get("name");
             String price = (String) map.get("price");
-            int showing = (int) map.get("showing"); 
+            int showing = (int) map.get("showing");
             int store = (int) map.get("storesIdstores");
             p.setDescription(description != null ? description : p.getDescription());
             p.setName(name != null ? name : p.getName());
@@ -405,13 +426,94 @@ public class ProductManager {
             productsFacade.edit(p);
             r.setState(STATE_OK);
             r.setData("Producto actualizado");
-        }
-        else
+        } else
         {
             System.out.println("Product not found :(");
             r.setState(NO_RESULTS_ERROR);
             r.setData("Producto inexistente");
         }
+        return r;
+    }
+
+    private Result addPurchase(String data, String username) throws IOException
+    {
+        Result r = new Result();
+        Map<String, Object> map = mapper.readValue(data, Map.class);
+        int idproducts = (int) map.get("product");
+        System.out.println("Fetching user...");
+        Users user = usersFacade.getUserByEmail(username);
+        System.out.println("Fetching product...");
+        Products product = productsFacade.find(idproducts);
+        if (product != null)
+        {
+            boolean found = false;
+            System.out.println("Searching product in liked products");
+            List<Tastes> tastes = user.getTastesList();
+            for (Tastes taste : tastes)
+            {
+                if (taste.getLiked() && taste.getProducts().getIdproducts() == idproducts)
+                {
+                    System.out.println("Product found, updating likes");
+                    tastesFacade.deleteTaste(idproducts, user.getIdusers());
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                System.out.println("Product not found on liked, searching on recommendations");
+                List<Recomendations> recs = user.getRecomendationsList();
+                for (Recomendations rec : recs)
+                {
+                    if (rec.getProducts().getIdproducts() == idproducts)
+                    {
+                        System.out.println("Product found, updating recomendations");
+                        rec.setShowed(true);
+                        recomendationsFacade.deleteRecomendation(idproducts, user.getIdusers());
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            System.out.println("Adding purchase...");
+            Purchases purchase = new Purchases(user.getIdusers(), idproducts);
+            purchase.setPurchaseDate(new Date(System.currentTimeMillis()));
+            purchasesFacade.create(purchase);
+            r.setState(STATE_OK);
+            r.setData("Compra registrada");
+        } else
+        {
+            System.out.println("Product does not exists...");
+            r.setState(NO_RESULTS_ERROR);
+            r.setData("Producto no existente");
+        }
+        return r;
+    }
+
+    private Result showPurchases(String data, String username) throws IOException
+    {
+        Result r = new Result();
+        Map<String, Object> map = mapper.readValue(data, Map.class);
+        int iduser = -1;
+        if (map.containsKey("user"))
+        {
+            iduser = (int) map.get("user");
+        } else
+        {
+            System.out.println("Fetching user...");
+            Users user = usersFacade.getUserByEmail(username);
+            iduser = user.getIdusers();
+        }
+        System.out.println("Fetching user's purchases...");
+        List<Purchases> purchases = purchasesFacade.listbyUser(iduser);
+        List<Products> products = new ArrayList<>();
+        for (Purchases purchase : purchases)
+        {
+            System.out.println("Adding product...");
+            products.add(productsFacade.find(purchase.getPurchasesPK().getProductsIdproducts()));
+        }
+        r.setState(STATE_OK);
+        r.setData(mapper.writeValueAsString(products));
         return r;
     }
 
@@ -479,7 +581,7 @@ public class ProductManager {
             throw new RuntimeException(ne);
         }
     }
-    
+
     private RecomendationsFacade lookupRecomendationsFacadeBean()
     {
         try
@@ -492,13 +594,26 @@ public class ProductManager {
             throw new RuntimeException(ne);
         }
     }
-    
+
     private StoresFacade lookupStoresFacadeBean()
     {
         try
         {
             Context c = new InitialContext();
             return (StoresFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/StoresFacade!com.mill.session.StoresFacade");
+        } catch (NamingException ne)
+        {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
+    }
+
+    private PurchasesFacade lookupPurchasesFacadeBean()
+    {
+        try
+        {
+            Context c = new InitialContext();
+            return (PurchasesFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/PurchasesFacade!com.mill.session.PurchasesFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);

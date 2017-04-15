@@ -38,6 +38,7 @@ public class AuthenticationFilter implements ContainerRequestFilter{
     @Override
     public void filter(ContainerRequestContext requestcontext) throws IOException
     {
+        long t0 = System.currentTimeMillis();
         String authorizationHeader = requestcontext.getHeaderString(HttpHeaders.AUTHORIZATION);
         
         if(authorizationHeader == null || !authorizationHeader.startsWith("Basic "))
@@ -82,6 +83,8 @@ public class AuthenticationFilter implements ContainerRequestFilter{
         catch(Exception e)
         {
             requestcontext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
+        }finally{
+            System.out.println("Validation ended in " + (System.currentTimeMillis() - t0) + "ms..");
         }
     }
     

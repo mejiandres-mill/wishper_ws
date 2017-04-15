@@ -10,6 +10,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 /**
@@ -47,6 +48,15 @@ public class TastesFacade extends AbstractFacade<Tastes> {
         {
             return null;
         }
+    }
+    
+    public int deleteTaste(int idproducts, int idusers)
+    {
+        Query query = em.createNamedQuery("Tastes.deleteTastes");
+        query.setParameter("idproducts", idproducts);
+        query.setParameter("idusers", idusers);
+        
+        return query.executeUpdate();
     }
     
 }

@@ -52,7 +52,6 @@ public class WishperWS extends Application {
     public Response process(Message message, @Context SecurityContext securityContext)
     {
         long t0 = System.currentTimeMillis();
-        System.out.println("Validating user...");
         Principal principal = securityContext.getUserPrincipal();
         String username = principal.getName();
         System.out.println("Access granted to " + username + "...");

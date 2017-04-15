@@ -42,6 +42,8 @@ public class Constants {
 	public static final int OPER_UPDATE_PRODUCT = 310;
 	public static final int OPER_ADD_PRODUCT_TAG = 311;
 	public static final int OPER_ADD_PRODUCT_IMAGE = 312;
+        public static final int OPER_ADD_PURCHASE = 313;
+        public static final int OPER_SHOW_PURCHASES = 314;
 	public static final int OPER_ADD_STORE = 400;
 	public static final int OPER_UPDATE_STORE = 401;
 	public static final int OPER_ADD_STORE_TAG = 402;
@@ -51,6 +53,9 @@ public class Constants {
 	public static final int OPER_LOAD_CHAT = 503;
 	public static final int OPER_LOAD_CHATS = 504;
 	public static final int OPER_ADD_PRODUCT_MESSAGE = 505;
+        public static final int OPER_SEARCH_PEOPLE = 600;
+        public static final int OPER_SEARCH_PRODUCTS = 601;
+        public static final int OPER_SEARCH_STORE = 602;
 	
 	
 	//Table names
