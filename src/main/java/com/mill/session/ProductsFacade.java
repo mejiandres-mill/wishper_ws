@@ -6,9 +6,12 @@
 package com.mill.session;
 
 import com.mill.model.Products;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -29,6 +32,21 @@ public class ProductsFacade extends AbstractFacade<Products> {
     public ProductsFacade()
     {
         super(Products.class);
+    }
+    
+    public List<Products> lookup(String term)
+    {
+        List<Products> result = null;
+        TypedQuery<Products> query = em.createNamedQuery("Products.lookup", Products.class);
+        query.setParameter("term", "%" + term + "%");
+        try
+        {
+            result = query.getResultList();
+            return result;
+        }catch(NoResultException nre)
+        {
+            return null;
+        }
     }
     
 }

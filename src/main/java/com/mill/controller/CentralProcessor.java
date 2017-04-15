@@ -18,6 +18,7 @@ public class CentralProcessor {
     private final ProductManager productManager;
     private final StoreManager storeManager;
     private final ChatManager chatManager;
+    private final SearchManager searchManager;
     private final ObjectMapper mapper;
 
     public CentralProcessor()
@@ -28,6 +29,7 @@ public class CentralProcessor {
         storeManager = new StoreManager(mapper);
         productManager = new ProductManager(mapper);
         chatManager = new ChatManager(mapper);
+        searchManager = new SearchManager(mapper);
     }
 
     public Result process(Message message, String username) throws WSException, SQLException, NoSuchAlgorithmException, NamingException
@@ -50,6 +52,9 @@ public class CentralProcessor {
             case 5:
                 System.out.println("Calling chat manager with operation: " + message.getOperation() + "...");
                 return chatManager.process(message, username);
+            case 6:
+                System.out.println("Calling search manager with operation: " + message.getOperation() + "...");
+                return searchManager.process(message, username);
             default:
                 throw new WSException(Constants.INVALID_OPERATION, "Operación no válida");
         }

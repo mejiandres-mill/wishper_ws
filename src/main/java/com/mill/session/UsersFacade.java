@@ -6,6 +6,7 @@
 package com.mill.session;
 
 import com.mill.model.Users;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -48,7 +49,7 @@ public class UsersFacade extends AbstractFacade<Users> {
         }        
     }
     
-    public Users getUserByApiKey(String apiKey) throws NoResultException
+    public Users getUserByApiKey(String apiKey)
     {
         Users result = null;
         TypedQuery<Users> query = em.createNamedQuery("Users.findByApikey", Users.class);
@@ -61,6 +62,21 @@ public class UsersFacade extends AbstractFacade<Users> {
         {
             return null;
         }        
+    }
+    
+    public List<Users> lookup(String term) 
+    {
+        List<Users> result = null;
+        TypedQuery<Users> query =  em.createNamedQuery("Users.lookUp", Users.class);
+        query.setParameter("term", "%" + term + "%");
+        try
+        {
+            result = query.getResultList();
+            return result;
+        }catch(NoResultException nre)
+        {
+            return null;
+        }
     }
     
 }
