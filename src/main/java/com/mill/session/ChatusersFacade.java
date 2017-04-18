@@ -7,7 +7,7 @@ package com.mill.session;
 
 import com.mill.model.Chatusers;
 import java.util.List;
-import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -17,7 +17,7 @@ import javax.persistence.TypedQuery;
  *
  * @author mill2
  */
-@Stateless
+@Singleton
 public class ChatusersFacade extends AbstractFacade<Chatusers> {
 
     @PersistenceContext(unitName = "com.mill_wishper_ws_war_1.0-SNAPSHOTPU")

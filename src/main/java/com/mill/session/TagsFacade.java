@@ -6,8 +6,7 @@
 package com.mill.session;
 
 import com.mill.model.Tags;
-import com.mill.model.Users;
-import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -17,7 +16,7 @@ import javax.persistence.TypedQuery;
  *
  * @author mill2
  */
-@Stateless
+@Singleton
 public class TagsFacade extends AbstractFacade<Tags> {
 
     @PersistenceContext(unitName = "com.mill_wishper_ws_war_1.0-SNAPSHOTPU")

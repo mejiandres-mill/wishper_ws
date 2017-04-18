@@ -78,10 +78,10 @@ public class Products implements Serializable {
     @ManyToOne
     private Stores storesIdstores;
     @JsonIgnore
-    @OneToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "productsIdproducts")
+    @OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "productsIdproducts")
     private List<ProductImages> productImagesList;
     @JsonIgnore
-    @OneToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "productsIdproducts")
+    @OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "productsIdproducts")
     private List<ProductTags> productTagsList;
     @Transient
     private List<Images> images;

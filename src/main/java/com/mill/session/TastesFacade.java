@@ -6,7 +6,7 @@
 package com.mill.session;
 
 import com.mill.model.Tastes;
-import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -17,7 +17,7 @@ import javax.persistence.TypedQuery;
  *
  * @author mill2
  */
-@Stateless
+@Singleton
 public class TastesFacade extends AbstractFacade<Tastes> {
 
     @PersistenceContext(unitName = "com.mill_wishper_ws_war_1.0-SNAPSHOTPU")

@@ -78,7 +78,7 @@ public class Users implements Serializable {
     @Size(max = 256)
     private String apikey;
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "users")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "users")
     private List<Tastes> tastesList;
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
@@ -90,7 +90,7 @@ public class Users implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
     private List<Friends> friendsList;
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "users1", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "users1", fetch = FetchType.LAZY)
     private List<Friends> friendsList1;
     @JoinColumn(name = "countries_idcountries", referencedColumnName = "idcountries")
     @ManyToOne

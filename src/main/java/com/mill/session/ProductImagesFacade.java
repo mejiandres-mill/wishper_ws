@@ -6,7 +6,7 @@
 package com.mill.session;
 
 import com.mill.model.ProductImages;
-import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -14,7 +14,7 @@ import javax.persistence.PersistenceContext;
  *
  * @author mill2
  */
-@Stateless
+@Singleton
 public class ProductImagesFacade extends AbstractFacade<ProductImages> {
 
     @PersistenceContext(unitName = "com.mill_wishper_ws_war_1.0-SNAPSHOTPU")
