@@ -140,7 +140,7 @@ public class StoreManager {
         try
         {
             Context c = new InitialContext();
-            return (StoresFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/StoresFacade!com.mill.session.StoresFacade");
+            return (StoresFacade) c.lookup("java:global/wishper_ws/StoresFacade!com.mill.session.StoresFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
@@ -153,7 +153,7 @@ public class StoreManager {
         try
         {
             Context c = new InitialContext();
-            return (TagsFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/TagsFacade!com.mill.session.TagsFacade");
+            return (TagsFacade) c.lookup("java:global/wishper_ws/TagsFacade!com.mill.session.TagsFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);

@@ -118,10 +118,8 @@ public class AccessManager {
                     databaseEntity.setApikey(Security.generateApiKey());
                     usersFacade.edit(databaseEntity);
                     user = new Users(databaseEntity);
-                    System.out.println(user);
-                    System.out.println(mapper.writeValueAsString(user));
                     r.setState(Constants.STATE_OK);
-                    r.setData(mapper.writeValueAsString(user));
+                    r.setData(mapper.writeValueAsString(databaseEntity));
 
                 } else
                 {
@@ -227,7 +225,7 @@ public class AccessManager {
         try
         {
             Context c = new InitialContext();
-            return (UsersFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/UsersFacade!com.mill.session.UsersFacade");
+            return (UsersFacade) c.lookup("java:global/wishper_ws/UsersFacade!com.mill.session.UsersFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
@@ -240,7 +238,7 @@ public class AccessManager {
         try
         {
             Context c = new InitialContext();
-            return (ImagesFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/ImagesFacade!com.mill.session.ImagesFacade");
+            return (ImagesFacade) c.lookup("java:global/wishper_ws/ImagesFacade!com.mill.session.ImagesFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);

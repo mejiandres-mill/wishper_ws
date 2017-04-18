@@ -132,7 +132,7 @@ public class SearchManager {
         try
         {
             Context c = new InitialContext();
-            return (UsersFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/UsersFacade!com.mill.session.UsersFacade");
+            return (UsersFacade) c.lookup("java:global/wishper_ws/UsersFacade!com.mill.session.UsersFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
@@ -145,7 +145,7 @@ public class SearchManager {
         try
         {
             Context c = new InitialContext();
-            return (ProductsFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/ProductsFacade!com.mill.session.ProductsFacade");
+            return (ProductsFacade) c.lookup("java:global/wishper_ws/ProductsFacade!com.mill.session.ProductsFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
@@ -158,7 +158,7 @@ public class SearchManager {
         try
         {
             Context c = new InitialContext();
-            return (StoresFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/StoresFacade!com.mill.session.StoresFacade");
+            return (StoresFacade) c.lookup("java:global/wishper_ws/StoresFacade!com.mill.session.StoresFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);

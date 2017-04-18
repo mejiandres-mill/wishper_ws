@@ -98,7 +98,7 @@ public class AuthenticationFilter implements ContainerRequestFilter{
         try
         {
             Context c = new InitialContext();
-            return (UsersFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/UsersFacade!com.mill.session.UsersFacade");
+            return (UsersFacade) c.lookup("java:global/wishper_ws/UsersFacade!com.mill.session.UsersFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);

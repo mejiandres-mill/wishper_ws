@@ -522,7 +522,7 @@ public class ProductManager {
         try
         {
             Context c = new InitialContext();
-            return (ProductsFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/ProductsFacade!com.mill.session.ProductsFacade");
+            return (ProductsFacade) c.lookup("java:global/wishper_ws/ProductsFacade!com.mill.session.ProductsFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
@@ -535,7 +535,7 @@ public class ProductManager {
         try
         {
             Context c = new InitialContext();
-            return (TagsFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/TagsFacade!com.mill.session.TagsFacade");
+            return (TagsFacade) c.lookup("java:global/wishper_ws/TagsFacade!com.mill.session.TagsFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
@@ -548,7 +548,7 @@ public class ProductManager {
         try
         {
             Context c = new InitialContext();
-            return (ImagesFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/ImagesFacade!com.mill.session.ImagesFacade");
+            return (ImagesFacade) c.lookup("java:global/wishper_ws/ImagesFacade!com.mill.session.ImagesFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
@@ -561,7 +561,7 @@ public class ProductManager {
         try
         {
             Context c = new InitialContext();
-            return (UsersFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/UsersFacade!com.mill.session.UsersFacade");
+            return (UsersFacade) c.lookup("java:global/wishper_ws/UsersFacade!com.mill.session.UsersFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
@@ -574,7 +574,7 @@ public class ProductManager {
         try
         {
             Context c = new InitialContext();
-            return (TastesFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/TastesFacade!com.mill.session.TastesFacade");
+            return (TastesFacade) c.lookup("java:global/wishper_ws/TastesFacade!com.mill.session.TastesFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
@@ -587,7 +587,7 @@ public class ProductManager {
         try
         {
             Context c = new InitialContext();
-            return (RecomendationsFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/RecomendationsFacade!com.mill.session.RecomendationsFacade");
+            return (RecomendationsFacade) c.lookup("java:global/wishper_ws/RecomendationsFacade!com.mill.session.RecomendationsFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
@@ -600,7 +600,7 @@ public class ProductManager {
         try
         {
             Context c = new InitialContext();
-            return (StoresFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/StoresFacade!com.mill.session.StoresFacade");
+            return (StoresFacade) c.lookup("java:global/wishper_ws/StoresFacade!com.mill.session.StoresFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
@@ -613,7 +613,7 @@ public class ProductManager {
         try
         {
             Context c = new InitialContext();
-            return (PurchasesFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/PurchasesFacade!com.mill.session.PurchasesFacade");
+            return (PurchasesFacade) c.lookup("java:global/wishper_ws/PurchasesFacade!com.mill.session.PurchasesFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);

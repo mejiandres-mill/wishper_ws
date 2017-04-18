@@ -325,7 +325,7 @@ public class ChatManager {
         try
         {
             Context c = new InitialContext();
-            return (UsersFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/UsersFacade!com.mill.session.UsersFacade");
+            return (UsersFacade) c.lookup("java:global/wishper_ws/UsersFacade!com.mill.session.UsersFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
@@ -338,7 +338,7 @@ public class ChatManager {
         try
         {
             Context c = new InitialContext();
-            return (ChatsFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/ChatsFacade!com.mill.session.ChatsFacade");
+            return (ChatsFacade) c.lookup("java:global/wishper_ws/ChatsFacade!com.mill.session.ChatsFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
@@ -351,7 +351,7 @@ public class ChatManager {
         try
         {
             Context c = new InitialContext();
-            return (ChatusersFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/ChatusersFacade!com.mill.session.ChatusersFacade");
+            return (ChatusersFacade) c.lookup("java:global/wishper_ws/ChatusersFacade!com.mill.session.ChatusersFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
@@ -364,7 +364,7 @@ public class ChatManager {
         try
         {
             Context c = new InitialContext();
-            return (MessagesFacade) c.lookup("java:global/wishper_ws-1.0-SNAPSHOT/MessagesFacade!com.mill.session.MessagesFacade");
+            return (MessagesFacade) c.lookup("java:global/wishper_ws/MessagesFacade!com.mill.session.MessagesFacade");
         } catch (NamingException ne)
         {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);

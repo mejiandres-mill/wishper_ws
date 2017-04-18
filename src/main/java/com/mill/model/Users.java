@@ -135,6 +135,8 @@ public class Users implements Serializable {
         entrydate = u.entrydate;
         gender = u.gender;
         imagesIdimages = u.imagesIdimages;
+        apikey = u.apikey;
+        countriesIdcountries = u.countriesIdcountries;
     }
 
     public Integer getIdusers()
