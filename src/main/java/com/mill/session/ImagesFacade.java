@@ -12,6 +12,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /**
  *
@@ -33,20 +35,14 @@ public class ImagesFacade extends AbstractFacade<Images> {
     {
         super(Images.class);
     }
-    
+
     public Images findByUrl(String url)
     {
         Images result = null;
         TypedQuery<Images> query = em.createNamedQuery("Images.findByUrl", Images.class);
         query.setParameter("url", url);
-        try
-        {
-            result = query.getSingleResult();
-            return result;
-        }catch(NoResultException nre)
-        {
-            return null;
-        }
+        result = query.getSingleResult();
+        return result;
     }
-    
+
 }

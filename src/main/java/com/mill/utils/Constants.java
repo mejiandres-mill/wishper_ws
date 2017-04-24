@@ -23,7 +23,8 @@ public class Constants {
 	public static final int OPER_LOGIN = 101;
 	public static final int OPER_REFRESH_SESSION = 102;
 	public static final int OPER_UPDATE_USER = 103;
-	public static final int OPER_ADD_USER_IMAGE = 104;//
+	public static final int OPER_ADD_USER_IMAGE = 104;
+        public static final int OPER_VALIDATE_USER = 105;
 	public static final int OPER_SHOW_FRIENDS = 200;
 	public static final int OPER_SHOW_PEOPLE = 201;
 	public static final int OPER_ADD_FRIEND = 202;

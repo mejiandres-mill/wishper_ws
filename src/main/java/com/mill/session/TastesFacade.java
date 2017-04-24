@@ -12,6 +12,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /**
  *
@@ -33,30 +35,25 @@ public class TastesFacade extends AbstractFacade<Tastes> {
     {
         super(Tastes.class);
     }
-    
+
     public Tastes findByKeys(int idproducts, int idusers)
     {
         Tastes result = null;
         TypedQuery<Tastes> query = em.createNamedQuery("Tastes.findByKeys", Tastes.class);
         query.setParameter("idproducts", idproducts);
         query.setParameter("idusers", idusers);
-        try
-        {
-            result = query.getSingleResult();
-            return result;
-        }catch(NoResultException nre)
-        {
-            return null;
-        }
+        result = query.getSingleResult();
+        return result;
     }
-    
+
     public int deleteTaste(int idproducts, int idusers)
     {
+        int count = -1;
         Query query = em.createNamedQuery("Tastes.deleteTastes");
         query.setParameter("idproducts", idproducts);
         query.setParameter("idusers", idusers);
-        
-        return query.executeUpdate();
+        count = query.executeUpdate();
+        return count;
     }
-    
+
 }

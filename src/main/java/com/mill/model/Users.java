@@ -7,6 +7,7 @@ package com.mill.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -24,6 +25,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -107,6 +109,11 @@ public class Users implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy = "usersIdusers")
     private List<Messages> messagesList;
+    @Transient
+    private boolean friend;
+    @JsonIgnore
+    @Transient
+    private List<Users> friendsis;
 
     public Users()
     {
@@ -335,6 +342,32 @@ public class Users implements Serializable {
     public void setMessagesList(List<Messages> messagesList)
     {
         this.messagesList = messagesList;
+    }
+    
+    public boolean isFriend()
+    {
+        return friend;
+    }
+    
+    public void setFriend(boolean friend)
+    {
+        this.friend = friend;
+    }
+    
+    public List<Users> getFriendsis()
+    {
+        if(friendsis == null)
+            friendsis = new ArrayList<>();
+        for(Friends f : getFriendsList1())
+        {
+            friendsis.add(f.getUsers());
+        }
+        return friendsis;
+    }
+    
+    public void setFriendsis(List<Users> friendsis)
+    {
+        this.friendsis = friendsis;
     }
 
     @Override

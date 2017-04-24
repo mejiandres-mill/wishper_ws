@@ -9,6 +9,7 @@ import com.mill.controller.CentralProcessor;
 import com.mill.exceptions.WSException;
 import com.mill.security.Secured;
 import com.mill.utils.Constants;
+import com.mill.utils.HibernateUtil;
 import com.mill.utils.Message;
 import com.mill.utils.Result;
 import java.security.NoSuchAlgorithmException;
@@ -26,6 +27,8 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /**
  *
@@ -52,17 +55,22 @@ public class WishperWS extends Application {
     public Response process(Message message, @Context SecurityContext securityContext)
     {
         long t0 = System.currentTimeMillis();
+        Result result = new Result();
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.getTransaction();
         Principal principal = securityContext.getUserPrincipal();
         String username = principal.getName();
         System.out.println("Access granted to " + username + "...");
         try
         {
             System.out.println("Processing request...");
-            return Response.status(200).entity(processor.process(message, username)).build();
+            result = processor.process(message, username);
+            tx.commit();
+            return Response.status(200).entity(result).build();
         } catch (Exception e)
         {
             e.printStackTrace();
-            Result result = new Result();
+            tx.rollback();
             if (e instanceof SQLException)
             {
                 result.setState(Constants.DATABASE_ERROR);
@@ -92,9 +100,10 @@ public class WishperWS extends Application {
                 result.setData("Ocurrió un error inesperado");
             }
             System.out.println("Finish processing...");
-            return Response.status(500).entity(result).build();
+            
         }finally{
             System.out.println("Request processed in " + (System.currentTimeMillis() - t0) + "ms...");
+            return Response.status(500).entity(result).build();
         }
     }
 }

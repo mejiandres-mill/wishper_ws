@@ -8,11 +8,12 @@ package com.mill.session;
 import com.mill.model.Users;
 import java.util.List;
 import javax.ejb.Singleton;
-import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /**
  *
@@ -34,50 +35,32 @@ public class UsersFacade extends AbstractFacade<Users> {
     {
         super(Users.class);
     }
-    
+
     public Users getUserByEmail(String email) throws NoResultException
     {
         Users result = null;
         TypedQuery<Users> query = em.createNamedQuery("Users.findByEmail", Users.class);
         query.setParameter("email", email);
-        try
-        {
-            result = query.getSingleResult();
-            return result;
-        }catch(NoResultException nre)
-        {
-            return null;
-        }        
+        result = query.getSingleResult();
+        return result;
     }
-    
+
     public Users getUserByApiKey(String apiKey)
     {
         Users result = null;
         TypedQuery<Users> query = em.createNamedQuery("Users.findByApikey", Users.class);
         query.setParameter("apikey", apiKey);
-        try
-        {
-            result = query.getSingleResult();
-            return result;
-        }catch(NoResultException nre)
-        {
-            return null;
-        }        
+        result = query.getSingleResult();
+        return result;
     }
-    
-    public List<Users> lookup(String term) 
+
+    public List<Users> lookup(String term)
     {
         List<Users> result = null;
-        TypedQuery<Users> query =  em.createNamedQuery("Users.lookUp", Users.class);
+        TypedQuery<Users> query = em.createNamedQuery("Users.lookUp", Users.class);
         query.setParameter("term", "%" + term + "%");
-        try
-        {
-            result = query.getResultList();
-            return result;
-        }catch(NoResultException nre)
-        {
-            return null;
-        }
+        result = query.getResultList();
+        return result;
     }
-    
+
 }

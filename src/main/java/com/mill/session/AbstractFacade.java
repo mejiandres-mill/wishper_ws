@@ -7,6 +7,8 @@ package com.mill.session;
 
 import java.util.List;
 import javax.persistence.EntityManager;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /**
  *
@@ -25,11 +27,13 @@ public abstract class AbstractFacade<T> {
 
     public void create(T entity)
     {
+
         getEntityManager().persist(entity);
     }
 
     public void edit(T entity)
     {
+
         getEntityManager().merge(entity);
     }
 
@@ -40,33 +44,41 @@ public abstract class AbstractFacade<T> {
 
     public T find(Object id)
     {
-        return getEntityManager().find(entityClass, id);
+        T object = null;
+        object = getEntityManager().find(entityClass, id);
+        return object;
     }
 
     public List<T> findAll()
     {
+        List<T> result = null;
         javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         cq.select(cq.from(entityClass));
-        return getEntityManager().createQuery(cq).getResultList();
+        result = getEntityManager().createQuery(cq).getResultList();
+        return result;
     }
 
     public List<T> findRange(int[] range)
     {
+        List<T> result = null;
         javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         cq.select(cq.from(entityClass));
         javax.persistence.Query q = getEntityManager().createQuery(cq);
         q.setMaxResults(range[1] - range[0] + 1);
         q.setFirstResult(range[0]);
-        return q.getResultList();
+        result = q.getResultList();
+        return result;
     }
 
     public int count()
     {
+        int count = -1;
         javax.persistence.criteria.CriteriaQuery cq = getEntityManager().getCriteriaBuilder().createQuery();
         javax.persistence.criteria.Root<T> rt = cq.from(entityClass);
         cq.select(getEntityManager().getCriteriaBuilder().count(rt));
         javax.persistence.Query q = getEntityManager().createQuery(cq);
-        return ((Long) q.getSingleResult()).intValue();
+        count = ((Long) q.getSingleResult()).intValue();
+        return count;
     }
-    
+
 }

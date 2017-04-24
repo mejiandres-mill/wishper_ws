@@ -59,6 +59,8 @@ public class AccessManager {
                     return updateUser(message.getData());
                 case Constants.OPER_ADD_USER_IMAGE:
                     return addProfilePic(message.getData(), username);
+                case Constants.OPER_VALIDATE_USER:
+                    return validateUser(message.getData(), username);
                 default:
                     throw new WSException(Constants.INVALID_OPERATION, "Operación no válida");
             }
@@ -117,7 +119,6 @@ public class AccessManager {
                 {
                     databaseEntity.setApikey(Security.generateApiKey());
                     usersFacade.edit(databaseEntity);
-                    user = new Users(databaseEntity);
                     r.setState(Constants.STATE_OK);
                     r.setData(mapper.writeValueAsString(databaseEntity));
 
@@ -218,6 +219,40 @@ public class AccessManager {
             r.setData(mapper.writeValueAsString(user));
             return r;
         }
+    }
+
+    private Result validateUser(String data, String username) throws IOException, NoSuchAlgorithmException
+    {
+        Result r = new Result();
+        Users user = mapper.readValue(data, Users.class);
+        System.out.println("Checking if user exists...");
+        Users check = usersFacade.getUserByEmail(user.getEmail());
+        if (check != null)
+        {
+            System.out.println("Users checked, returning...");
+            check.setApikey(Security.generateApiKey());
+            usersFacade.edit(check);
+            r.setState(Constants.STATE_OK);
+            r.setData(mapper.writeValueAsString(check));
+
+        } else
+        {
+            System.out.println("User not found, creating...");
+            user.setPassword(Security.sha256(user.getPassword()));
+            user.setEntrydate(new Date(System.currentTimeMillis()));
+            user.setApikey(Security.generateApiKey());
+            try
+            {
+                usersFacade.create(user);
+                r.setState(Constants.STATE_OK);
+                r.setData(mapper.writeValueAsString(user));
+            } catch (EntityExistsException e)
+            {
+                r.setState(Constants.EXISTING_USER);
+                r.setData("La dirección de correo electrónico ya está en uso");
+            }
+        }
+        return r;
     }
 
     private UsersFacade lookupUsersFacadeBean()

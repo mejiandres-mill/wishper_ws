@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mill.exceptions.WSException;
+import com.mill.model.Friends;
 import com.mill.model.Products;
 import com.mill.model.Stores;
 import com.mill.model.Users;
@@ -67,10 +68,14 @@ public class SearchManager {
     private Result searchPeople(String data, String username) throws JsonParseException, JsonMappingException, IOException
     {
         Result r = new Result();
+        Users user = usersFacade.getUserByEmail(username);
         Map<String, Object> map = mapper.readValue(data, Map.class);
         String term = (String) map.get("term");
         System.out.println("Looking up...");
         List<Users> people = usersFacade.lookup(term);
+        List<Users> friends = user.getFriendsis();
+        for(Users u : people)
+            u.setFriend(friends.contains(u));
         if (people != null && !people.isEmpty())
         {
             System.out.println("Something found...");

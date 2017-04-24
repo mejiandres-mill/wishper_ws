@@ -12,6 +12,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /**
  *
@@ -33,29 +35,24 @@ public class FriendsFacade extends AbstractFacade<Friends> {
     {
         super(Friends.class);
     }
-    
+
     public Friends findRelationShip(int friender, int friendee)
     {
         Friends result = null;
         TypedQuery<Friends> query = em.createNamedQuery("Friends.findRelationship", Friends.class);
         query.setParameter("friender", friender);
         query.setParameter("friendee", friendee);
-        try
-        {
-            result = query.getSingleResult();
-            return result;
-        }catch(NoResultException nre)
-        {
-            return null;
-        }
+        result = query.getSingleResult();
+        return result;
     }
-    
+
     public int deleteRelationShip(int friender, int friendee)
     {
+        int count = -1;
         Query query = em.createNamedQuery("Friends.deleteRelationship");
         query.setParameter("friender", friender);
         query.setParameter("friendee", friendee);
-        
-        return query.executeUpdate();
+        count = query.executeUpdate();
+        return count;
     }
 }

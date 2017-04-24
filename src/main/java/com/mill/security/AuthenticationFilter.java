@@ -7,6 +7,7 @@ package com.mill.security;
 
 import com.mill.model.Users;
 import com.mill.session.UsersFacade;
+import com.mill.utils.HibernateUtil;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.logging.Level;
@@ -23,6 +24,8 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /**
  *
@@ -39,6 +42,8 @@ public class AuthenticationFilter implements ContainerRequestFilter{
     public void filter(ContainerRequestContext requestcontext) throws IOException
     {
         long t0 = System.currentTimeMillis();
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Transaction tx = session.beginTransaction();
         String authorizationHeader = requestcontext.getHeaderString(HttpHeaders.AUTHORIZATION);
         
         if(authorizationHeader == null || !authorizationHeader.startsWith("Basic "))
@@ -82,6 +87,8 @@ public class AuthenticationFilter implements ContainerRequestFilter{
         }
         catch(Exception e)
         {
+            e.printStackTrace();
+            tx.rollback();
             requestcontext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
         }finally{
             System.out.println("Validation ended in " + (System.currentTimeMillis() - t0) + "ms..");
@@ -90,6 +97,7 @@ public class AuthenticationFilter implements ContainerRequestFilter{
     
     private Users validateToken(String token) throws Exception
     {
+        
         return usersFacade.getUserByApiKey(token);
     }
     

@@ -12,6 +12,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /**
  *
@@ -33,21 +35,14 @@ public class PurchasesFacade extends AbstractFacade<Purchases> {
     {
         super(Purchases.class);
     }
-    
+
     public List<Purchases> listbyUser(int idusers)
     {
         List<Purchases> result = null;
         TypedQuery<Purchases> query = em.createNamedQuery("Purchases.findByUsersIdusers", Purchases.class);
         query.setParameter("usersIdusers", idusers);
-        
-        try
-        {
-            result = query.getResultList();
-            return result;
-        }catch(NoResultException nre)
-        {
-            return null;
-        }
+        result = query.getResultList();
+        return result;
     }
-    
+
 }

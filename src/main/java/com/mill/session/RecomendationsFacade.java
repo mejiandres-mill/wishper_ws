@@ -12,6 +12,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /**
  *
@@ -33,7 +35,7 @@ public class RecomendationsFacade extends AbstractFacade<Recomendations> {
     {
         super(Recomendations.class);
     }
-    
+
     public Recomendations findByKeys(int recomender, int receipient, int idproducts)
     {
         Recomendations result = null;
@@ -41,23 +43,19 @@ public class RecomendationsFacade extends AbstractFacade<Recomendations> {
         query.setParameter("recomender", recomender);
         query.setParameter("receipient", receipient);
         query.setParameter("idproducts", idproducts);
-        try
-        {
-            result = query.getSingleResult();
-            return result;
-        }catch(NoResultException nre)
-        {
-            return null;
-        }
+        result = query.getSingleResult();
+        return result;
     }
-    
+
     public int deleteRecomendation(int idproducts, int idusers)
     {
+        int count = -1;
         Query query = em.createNamedQuery("Recomendations.deleteRecomendations");
         query.setParameter("idproducts", idproducts);
         query.setParameter("idusers", idusers);
-        
-        return query.executeUpdate();
+        count = query.executeUpdate();
+        return count;
+
     }
-    
+
 }

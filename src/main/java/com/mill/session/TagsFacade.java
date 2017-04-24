@@ -11,6 +11,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /**
  *
@@ -38,14 +40,7 @@ public class TagsFacade extends AbstractFacade<Tags> {
         Tags result = null;
         TypedQuery<Tags> query = em.createNamedQuery("Tags.findByName", Tags.class);
         query.setParameter("name", name);
-        try
-        {
-            result = query.getSingleResult();
-            return result;
-        }catch(NoResultException nre)
-        {
-            return null;
-        } 
+        return result;
     }
     
 }
